@@ -1,0 +1,34 @@
+{
+  "name": "AKLL-Challonge",
+  "version": "1.0.0",
+  "description": "Challonge integration for AKL &amp; ALL.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "service": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Akzuu/AKLL-Challonge.git"
+  },
+  "keywords": [],
+  "author": "Akseli Kolari TG:@akzu404",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Akzuu/AKLL-Challonge/issues"
+  },
+  "homepage": "https://github.com/Akzuu/AKLL-Challonge#readme",
+  "devDependencies": {
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.21.2"
+  },
+  "dependencies": {
+    "config": "^3.3.1",
+    "fastify": "^2.14.1",
+    "fastify-helmet": "^3.0.2",
+    "fastify-swagger": "^2.6.0",
+    "mongoose": "^5.9.18",
+    "winston": "^3.2.1"
+  }
+}
