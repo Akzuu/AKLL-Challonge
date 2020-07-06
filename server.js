@@ -37,7 +37,7 @@ const initSwagger = () => {
       produces: ['application/json'],
       tags: [
         {
-          name: 'Integration',
+          name: 'Tournament',
           description: '...',
         }, {
           name: 'Utility',
@@ -50,9 +50,9 @@ const initSwagger = () => {
 };
 
 // Routes
-const integrationRoute = async (server) => {
-  Object.keys(routes.integration).forEach((key) => {
-    routes.integration[key](server);
+const tournamentRoute = async (server) => {
+  Object.keys(routes.tournament).forEach((key) => {
+    routes.tournament[key](server);
   });
 };
 
@@ -82,7 +82,7 @@ const initServer = async () => {
     .register(fastifySwagger, initSwagger())
     .register(fastifyHelmet)
     .register(utilityRoute, { prefix: `${ROUTE_PREFIX}/utility` })
-    .register(integrationRoute, { prefix: `${ROUTE_PREFIX}/integration` });
+    .register(tournamentRoute, { prefix: `${ROUTE_PREFIX}/tournament` });
 
   return {
     start: async () => {

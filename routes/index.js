@@ -1,7 +1,7 @@
-const integration = require('./integration');
+const tournament = require('./tournament');
 const utility = require('./utility');
 
 module.exports = {
-  integration,
+  tournament,
   utility,
 };

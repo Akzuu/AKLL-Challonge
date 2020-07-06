@@ -5,4 +5,7 @@ module.exports = {
       uri: 'E.g mongodb://localhost:27017/akl-challonge',
     },
   },
+  challonge: {
+    apiKey: 'YOUR_KEY_HERE',
+  },
 };
