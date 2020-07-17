@@ -29,6 +29,7 @@ const schema = {
         description: 'E.g. akl when tournament will be located at akl.challonge.com',
       },
     },
+    required: ['name', 'tournamentType'],
   },
   response: {
     200: {
@@ -37,6 +38,9 @@ const schema = {
         status: {
           type: 'string',
         },
+        tournamentID: {
+          type: 'number',
+        },
       },
     },
   },
@@ -44,7 +48,7 @@ const schema = {
 
 const handler = async (req, reply) => {
   const {
-    name, tournamentType, tournamentDescription, swissRounds,
+    name, tournamentType, tournamentDescription, swissRounds, subdomain,
   } = req.body;
 
   let tournament;
@@ -54,9 +58,10 @@ const handler = async (req, reply) => {
       tournament_type: tournamentType,
       description: tournamentDescription,
       swiss_rounds: swissRounds,
+      subdomain,
     });
   } catch (error) {
-    log.error(error);
+    log.error('Error when trying to create a tournament! ', error);
     reply.status(500).send({
       status: 'ERROR',
       message: 'Internal Server Error',
