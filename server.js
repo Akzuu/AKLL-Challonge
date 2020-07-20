@@ -66,7 +66,6 @@ const participantRoute = async (server) => {
   });
 };
 
-
 const utilityRoute = async (server) => {
   Object.keys(routes.utility).forEach((key) => {
     routes.utility[key](server);
