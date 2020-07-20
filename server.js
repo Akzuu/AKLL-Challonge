@@ -40,9 +40,13 @@ const initSwagger = () => {
           name: 'Tournament',
           description: '...',
         }, {
+          name: 'Participant',
+          description: 'Manage tournament participants',
+        }, {
           name: 'Utility',
           description: 'Utility endpoints',
         },
+
       ],
     },
     exposeRoute: true,
@@ -55,6 +59,13 @@ const tournamentRoute = async (server) => {
     routes.tournament[key](server);
   });
 };
+
+const participantRoute = async (server) => {
+  Object.keys(routes.participant).forEach((key) => {
+    routes.participant[key](server);
+  });
+};
+
 
 const utilityRoute = async (server) => {
   Object.keys(routes.utility).forEach((key) => {
@@ -81,8 +92,9 @@ const initServer = async () => {
   server
     .register(fastifySwagger, initSwagger())
     .register(fastifyHelmet)
-    .register(utilityRoute, { prefix: `${ROUTE_PREFIX}/utility` })
-    .register(tournamentRoute, { prefix: `${ROUTE_PREFIX}/tournament` });
+    .register(tournamentRoute, { prefix: `${ROUTE_PREFIX}/tournament` })
+    .register(participantRoute, { prefix: `${ROUTE_PREFIX}/participant` })
+    .register(utilityRoute, { prefix: `${ROUTE_PREFIX}/utility` });
 
   return {
     start: async () => {
