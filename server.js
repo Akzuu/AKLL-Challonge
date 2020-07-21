@@ -17,8 +17,8 @@ const initSwagger = () => {
     routePrefix: `${ROUTE_PREFIX}/documentation`,
     swagger: {
       info: {
-        title: 'Project AKL 2020 Web Backend - Challonge',
-        description: 'Project AKL 2020 Web Backend - Challonge',
+        title: 'Project AKLL 2020 Web Backend - Challonge',
+        description: 'Project AKLL 2020 Web Backend - Challonge',
         version: '1.0.0',
       },
       host: swaggerOptions.host,
@@ -43,10 +43,12 @@ const initSwagger = () => {
           name: 'Participant',
           description: 'Manage tournament participants',
         }, {
+          name: 'Match',
+          description: 'Manage tournament matches',
+        }, {
           name: 'Utility',
           description: 'Utility endpoints',
         },
-
       ],
     },
     exposeRoute: true,
@@ -66,6 +68,12 @@ const participantRoute = async (server) => {
   });
 };
 
+const matchRoute = async (server) => {
+  Object.keys(routes.match).forEach((key) => {
+    routes.match[key](server);
+  });
+};
+
 const utilityRoute = async (server) => {
   Object.keys(routes.utility).forEach((key) => {
     routes.utility[key](server);
@@ -82,7 +90,7 @@ const initServer = async () => {
     ignoreTrailingSlash: FASTIFY_OPTIONS.ignoreTrailingSlash,
     ajv: {
       customOptions: {
-        removeAdditional: 'all',
+        removeAdditional: 'all', // Remove additional params from the body etc
       },
     },
   });
@@ -93,6 +101,7 @@ const initServer = async () => {
     .register(fastifyHelmet)
     .register(tournamentRoute, { prefix: `${ROUTE_PREFIX}/tournament` })
     .register(participantRoute, { prefix: `${ROUTE_PREFIX}/participant` })
+    .register(matchRoute, { prefix: `${ROUTE_PREFIX}/match` })
     .register(utilityRoute, { prefix: `${ROUTE_PREFIX}/utility` });
 
   return {
