@@ -98,7 +98,16 @@ const initServer = async () => {
   // Register plugins and routes
   server
     .register(fastifySwagger, initSwagger())
-    .register(fastifyHelmet)
+    .register(fastifyHelmet, {
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ['\'self\''],
+          styleSrc: ['\'self\'', '\'unsafe-inline\''],
+          imgSrc: ['\'self\'', 'data:', 'validator.swagger.io'],
+          scriptSrc: ['\'self\'', 'https: \'unsafe-inline\''],
+        },
+      },
+    })
     .register(tournamentRoute, { prefix: `${ROUTE_PREFIX}/tournament` })
     .register(participantRoute, { prefix: `${ROUTE_PREFIX}/participant` })
     .register(matchRoute, { prefix: `${ROUTE_PREFIX}/match` })
