@@ -27,6 +27,7 @@ const schema = {
   },
 };
 
+// TODO: Rewrite this shit
 const handler = async (req, reply) => {
   const { matchStatus } = req.query;
 
