@@ -1,5 +1,12 @@
-const { log, getMatches, linkTeamIds } = require('../../lib');
+/* eslint-disable no-param-reassign */
+const config = require('config');
+const bent = require('bent');
+const { log, getMatches } = require('../../lib');
 const getParticipans = require('../../lib/get-participants');
+
+const AKL_CORE_BACKEND_URL = config.get('coreBackendUrl');
+
+const getTeam = bent(AKL_CORE_BACKEND_URL, 'GET', 'json', 200);
 
 const schema = {
   description: 'Get matches for the tournament in a more useful form.',
@@ -53,43 +60,6 @@ const handler = async (req, reply) => {
     return;
   }
 
-  const payload = {};
-  matches.forEach((elem) => {
-    if (!payload[elem.match.player1_id]) {
-      payload[elem.match.player1_id] = {
-        teamName: '',
-        teamChallongeId: '',
-        teamParticipantChallongeId: elem.match.player1_id,
-        teamCoreId: '',
-        matches: [],
-      };
-    }
-
-    if (!payload[elem.match.player2_id]) {
-      payload[elem.match.player2_id] = {
-        teamName: '',
-        teamChallongeId: '',
-        teamParticipantChallongeId: elem.match.player2_id,
-        teamCoreId: '',
-        matches: [],
-      };
-    }
-
-    payload[elem.match.player1_id].matches.push({
-      match_id: elem.match.id,
-      teamOne: elem.match.player1_id,
-      teamTwo: elem.match.player2_id,
-      round: elem.match.round,
-    });
-
-    payload[elem.match.player2_id].matches.push({
-      match_id: elem.match.id,
-      teamOne: elem.match.player1_id,
-      teamTwo: elem.match.player2_id,
-      round: elem.match.round,
-    });
-  });
-
   let participants;
   try {
     participants = await getParticipans(req.params.tournamentID);
@@ -111,38 +81,54 @@ const handler = async (req, reply) => {
     return;
   }
 
-  // Add team names to next to Ids
-  participants.forEach((elem) => {
-    if (payload[elem.participant.group_player_ids]) {
-      payload[elem.participant.group_player_ids].teamChallongeId = elem.participant.id;
-      payload[elem.participant.group_player_ids].teamName = elem.participant.name;
-    } else {
-      payload[elem.participant.id].teamChallongeId = elem.participant.id;
-      payload[elem.participant.id].teamName = elem.participant.name;
-    }
+  const promises = [];
+  const searchedTeams = [];
+  const prettyMatches = [];
+  matches.forEach((matchElement) => {
+    const { match } = matchElement;
+
+    const prettyMatch = {
+      match_id: match.id,
+      teamOne: match.player1_id,
+      teamOneName: '',
+      teamOneCoreId: '',
+      teamTwo: match.player2_id,
+      teamTwoName: '',
+      teamTwoCoreId: '',
+      round: match.round,
+    };
+
+    participants.forEach((participantElement) => {
+      const { participant } = participantElement;
+      if (participant.id === match.player1_id) {
+        prettyMatch.teamOneName = participant.name;
+      } else if (participant.id === match.player2_id) {
+        prettyMatch.teamTwoName = participant.name;
+      }
+
+      if (!searchedTeams.includes(participant.name)) {
+        promises.push(getTeam(`/team/teamName/${participant.name}/info`));
+      }
+    });
+
+    prettyMatches.push(prettyMatch);
   });
 
-  // Link core ids to teams while it also adds them to database for future use
-  let teamsObject;
-  try {
-    teamsObject = await linkTeamIds(payload);
-  } catch (error) {
-    log.error('Error when trying to link teams to db! ', error);
-    reply.status(500).send({
-      status: 'ERROR',
-      error: 'Internal Server Error',
-    });
-    return;
-  }
+  const results = await Promise.all(promises);
 
-  const teams = [];
-  Object.keys(teamsObject).forEach((team) => {
-    teams.push(teamsObject[team]);
+  results.forEach((team) => {
+    prettyMatches.forEach((prettyMatch) => {
+      if (prettyMatch.teamOneName === team.teamName) {
+        prettyMatch.teamOneCoreId = team._id;
+      } else if (prettyMatch.teamTwoName === team.teamName) {
+        prettyMatch.teamTwoCoreId = team._id;
+      }
+    });
   });
 
   reply.send({
     status: 'OK',
-    teams,
+    matches: prettyMatches,
   });
 };
 
