@@ -8,4 +8,5 @@ module.exports = {
   challonge: {
     apiKey: 'YOUR_KEY_HERE',
   },
+  coreBackendUrl: 'E.g. http://localhost:3000/aklapi',
 };
