@@ -113,6 +113,7 @@ const handler = async (req, reply) => {
     payload[elem.participant.group_player_ids].teamName = elem.participant.name;
   });
 
+  // In payload, the teams are not in array which means they are hard to process
   const payloadKeys = Object.keys(payload);
   const teams = [];
   payloadKeys.forEach((key) => {
