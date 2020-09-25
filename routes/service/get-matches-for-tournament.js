@@ -88,7 +88,7 @@ const handler = async (req, reply) => {
     const { match } = matchElement;
 
     const prettyMatch = {
-      match_id: match.id,
+      matchId: match.id,
       teamOne: match.player1_id,
       teamOneName: '',
       teamOneCoreId: '',
