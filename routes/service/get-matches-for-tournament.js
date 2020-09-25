@@ -1,4 +1,4 @@
-const { log, getMatches } = require('../../lib');
+const { log, getMatches, linkTeamIds } = require('../../lib');
 const getParticipans = require('../../lib/get-participants');
 
 const schema = {
@@ -47,6 +47,7 @@ const handler = async (req, reply) => {
     reply.status(404).send({
       status: 'ERROR',
       error: 'Not Found',
+      message: 'No matches found for this tournament!',
     });
     return;
   }
@@ -58,6 +59,7 @@ const handler = async (req, reply) => {
         teamName: '',
         teamChallongeId: '',
         teamParticipantChallongeId: elem.match.player1_id,
+        teamCoreId: '',
         matches: [],
       };
     }
@@ -67,6 +69,7 @@ const handler = async (req, reply) => {
         teamName: '',
         teamChallongeId: '',
         teamParticipantChallongeId: elem.match.player2_id,
+        teamCoreId: '',
         matches: [],
       };
     }
@@ -109,15 +112,31 @@ const handler = async (req, reply) => {
 
   // Add team names to next to Ids
   participants.forEach((elem) => {
-    payload[elem.participant.group_player_ids].teamChallongeId = elem.participant.id;
-    payload[elem.participant.group_player_ids].teamName = elem.participant.name;
+    if (payload[elem.participant.group_player_ids]) {
+      payload[elem.participant.group_player_ids].teamChallongeId = elem.participant.id;
+      payload[elem.participant.group_player_ids].teamName = elem.participant.name;
+    } else {
+      payload[elem.participant.id].teamChallongeId = elem.participant.id;
+      payload[elem.participant.id].teamName = elem.participant.name;
+    }
   });
 
-  // In payload, the teams are not in array which means they are hard to process
-  const payloadKeys = Object.keys(payload);
+  // Link core ids to teams while it also adds them to database for future use
+  let teamsObject;
+  try {
+    teamsObject = await linkTeamIds(payload);
+  } catch (error) {
+    log.error('Error when trying to link teams to db! ', error);
+    reply.status(500).send({
+      status: 'ERROR',
+      error: 'Internal Server Error',
+    });
+    return;
+  }
+
   const teams = [];
-  payloadKeys.forEach((key) => {
-    teams.push(payload[key]);
+  Object.keys(teamsObject).forEach((team) => {
+    teams.push(teamsObject[team]);
   });
 
   reply.send({

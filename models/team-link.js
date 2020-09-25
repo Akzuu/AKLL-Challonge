@@ -9,12 +9,12 @@ const schema = new Schema({
     required: true,
   },
   teamChallongeId: {
-    type: ObjectId,
+    type: String,
     required: true,
     unique: true,
   },
   teamParticipantChallongeId: {
-    type: ObjectId,
+    type: String,
     required: true,
     unique: true,
   },
