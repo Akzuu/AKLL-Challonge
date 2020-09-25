@@ -37,6 +37,9 @@ const initSwagger = () => {
       produces: ['application/json'],
       tags: [
         {
+          name: 'Service',
+          description: 'More useful service endpoints',
+        }, {
           name: 'Tournament',
           description: '...',
         }, {
@@ -80,6 +83,12 @@ const utilityRoute = async (server) => {
   });
 };
 
+const serviceRoute = async (server) => {
+  Object.keys(routes.service).forEach((key) => {
+    routes.service[key](server);
+  });
+};
+
 /**
  * Init server
  * @param {Object} options Optional.
@@ -111,7 +120,8 @@ const initServer = async () => {
     .register(tournamentRoute, { prefix: `${ROUTE_PREFIX}/tournament` })
     .register(participantRoute, { prefix: `${ROUTE_PREFIX}/participant` })
     .register(matchRoute, { prefix: `${ROUTE_PREFIX}/match` })
-    .register(utilityRoute, { prefix: `${ROUTE_PREFIX}/utility` });
+    .register(utilityRoute, { prefix: `${ROUTE_PREFIX}/utility` })
+    .register(serviceRoute, { prefix: `${ROUTE_PREFIX}/service` });
 
   return {
     start: async () => {

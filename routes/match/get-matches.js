@@ -41,12 +41,12 @@ const schema = {
 };
 
 const handler = async (req, reply) => {
-  const { matchState, challongeTeamID } = req.query;
+  const { matchStatus } = req.query;
 
   let matches;
   try {
     matches = await getMatches(req.params.tournamentID,
-      matchState, challongeTeamID);
+      matchStatus);
   } catch (error) {
     log.error('Error when trying to get matches! ', error);
     reply.status(500).send({
