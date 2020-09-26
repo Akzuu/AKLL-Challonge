@@ -100,9 +100,13 @@ const handler = async (req, reply) => {
 
     participants.forEach((participantElement) => {
       const { participant } = participantElement;
-      if (participant.id === match.player1_id) {
+      if (participant.id === match.player1_id
+        || (participant.group_player_ids.length === 1
+          && participant.group_player_ids[0] === match.player1_id)) {
         prettyMatch.teamOneName = participant.name;
-      } else if (participant.id === match.player2_id) {
+      } else if (participant.id === match.player2_id
+        || (participant.group_player_ids.length === 1
+          && participant.group_player_ids[0] === match.player2_id)) {
         prettyMatch.teamTwoName = participant.name;
       }
 
