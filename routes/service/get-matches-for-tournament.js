@@ -127,7 +127,18 @@ const handler = async (req, reply) => {
     return;
   }
 
-  const validResults = results.filter((result) => !(result instanceof Error));
+  // Filter teams that were not found from the backend out.
+  // Log filtered teams so that human can say if it was a fuckup or not
+  let index = 0;
+  const validResults = results.filter((result) => {
+    if (!(result instanceof Error)) {
+      index += 1;
+      return true;
+    }
+    log.info(`Failed to find following team from backend: ${searchedTeams[index]}`);
+    index += 1;
+    return false;
+  });
 
   validResults.forEach((team) => {
     prettyMatches.forEach((prettyMatch) => {
