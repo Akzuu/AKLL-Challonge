@@ -83,7 +83,7 @@ const handler = async (req, reply) => {
 
   const promises = [];
   const searchedTeams = [];
-  const prettyMatches = [];
+  let prettyMatches = [];
   matches.forEach((matchElement) => {
     const { match } = matchElement;
 
@@ -112,23 +112,36 @@ const handler = async (req, reply) => {
 
       if (!searchedTeams.includes(participant.name)) {
         promises.push(getTeam(`/team/teamName/${participant.name}/info`));
+        searchedTeams.push(participant.name);
       }
     });
 
     prettyMatches.push(prettyMatch);
   });
 
-  const results = await Promise.all(promises);
+  let results;
+  try {
+    results = await Promise.all(promises.map((p) => p.catch((e) => e)));
+  } catch (error) {
+    log.error('Looking for all the teams failed! ', error);
+    return;
+  }
 
-  results.forEach((team) => {
+  const validResults = results.filter((result) => !(result instanceof Error));
+
+  validResults.forEach((team) => {
     prettyMatches.forEach((prettyMatch) => {
       if (prettyMatch.teamOneName === team.teamName) {
         prettyMatch.teamOneCoreId = team._id;
       } else if (prettyMatch.teamTwoName === team.teamName) {
         prettyMatch.teamTwoCoreId = team._id;
+      } else {
+        prettyMatch.remove = true;
       }
     });
   });
+
+  prettyMatches = prettyMatches.filter((match) => !(match.remove));
 
   reply.send({
     status: 'OK',
