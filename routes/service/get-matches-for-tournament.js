@@ -133,11 +133,11 @@ const handler = async (req, reply) => {
   const validResults = results.filter((result) => {
     if (!(result instanceof Error)) {
       index += 1;
-      return true;
+      return false;
     }
     log.info(`Failed to find following team from backend: ${searchedTeams[index]}`);
     index += 1;
-    return false;
+    return true;
   });
 
   validResults.forEach((team) => {
