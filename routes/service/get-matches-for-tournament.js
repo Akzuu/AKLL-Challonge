@@ -135,12 +135,11 @@ const handler = async (req, reply) => {
   const validResults = results.filter((result) => {
     if (!(result instanceof Error)) {
       index += 1;
-      log.error(result);
-      return false;
+      return true;
     }
     log.info(`Failed to find following team from backend: ${searchedTeams[index]}`);
     index += 1;
-    return true;
+    return false;
   });
 
   log.info(validResults.length);
@@ -152,6 +151,7 @@ const handler = async (req, reply) => {
       } else if (prettyMatch.teamTwoName === team.teamName) {
         prettyMatch.teamTwoCoreId = team._id;
       } else {
+        log.info(`1. ${prettyMatch.teamOneName} 2. ${prettyMatch.teamTwoName} : ${team.teamName}`);
         prettyMatch.remove = true;
       }
     });
