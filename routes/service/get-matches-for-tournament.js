@@ -127,8 +127,6 @@ const handler = async (req, reply) => {
     return;
   }
 
-  log.info(results.length);
-
   // Filter teams that were not found from the backend out.
   // Log filtered teams so that human can say if it was a fuckup or not
   let index = 0;
@@ -142,8 +140,6 @@ const handler = async (req, reply) => {
     return false;
   });
 
-  log.info(validResults.length);
-
   validResults.forEach((team) => {
     prettyMatches.forEach((prettyMatch) => {
       if (prettyMatch.teamOneName === team.teamName) {
@@ -154,7 +150,13 @@ const handler = async (req, reply) => {
     });
   });
 
-  prettyMatches = prettyMatches.filter((match) => !(match.remove));
+  // Filter matches which are missing coreId
+  prettyMatches = prettyMatches.filter((match) => {
+    if (!match.teamOneCoreId || !match.teamTwoCoreId) {
+      return false;
+    }
+    return true;
+  });
 
   reply.send({
     status: 'OK',
