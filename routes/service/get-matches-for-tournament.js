@@ -135,6 +135,7 @@ const handler = async (req, reply) => {
   const validResults = results.filter((result) => {
     if (!(result instanceof Error)) {
       index += 1;
+      log.error(result);
       return false;
     }
     log.info(`Failed to find following team from backend: ${searchedTeams[index]}`);
