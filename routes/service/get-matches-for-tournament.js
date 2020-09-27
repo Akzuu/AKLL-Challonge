@@ -150,9 +150,6 @@ const handler = async (req, reply) => {
         prettyMatch.teamOneCoreId = team._id;
       } else if (prettyMatch.teamTwoName === team.teamName) {
         prettyMatch.teamTwoCoreId = team._id;
-      } else {
-        log.info(`1. ${prettyMatch.teamOneName} 2. ${prettyMatch.teamTwoName} : ${team.teamName}`);
-        prettyMatch.remove = true;
       }
     });
   });
